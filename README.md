@@ -10,3 +10,4 @@ O sistema faz a captura de dados dos personagens de quadrinhos da Marvel atravé
 - Desenvolvido em C#
 - Listagens dos personagens e das comics paginadas utilizando a API *cloudscribe*
 - Desenvolvido com arquitetura MVC
+- Utilizado Bootstrap
