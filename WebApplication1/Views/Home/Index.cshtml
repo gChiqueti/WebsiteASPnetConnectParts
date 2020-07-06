@@ -2,28 +2,48 @@
 	ViewData["Title"] = "Home Page";
 }
 
-@model Personagem[]
+@model cloudscribe.Pagination.Models.PagedResult<Personagem>
 
 <div>
-	@foreach (var personagem in Model)
+	<cs-pager cs-paging-pagenumber="Model.PageNumber"
+			  cs-paging-totalitems="Model.TotalItems"
+			  cs-paging-pagesize="Model.PageSize"
+			  cs-pagenumber-param="pagenumber"
+			  asp-action="Index">
+	</cs-pager>
+	<p>
+		Mostrando @((Model.PageNumber - 1) * Model.PageSize) -
+		@(((Model.PageNumber * Model.PageSize) < Model.TotalItems) ? Model.PageNumber * Model.PageSize : Model.TotalItems) de @Model.TotalItems
+	</p>
+
+	@foreach (var personagem in Model.Data)
 	{
-	<div class="row">
-		
-
-
-		<div class="col-sm-4">
-			<img src="@personagem.UrlImagem" class="img-responsive" />
+		<div class="row">
+			<div class="col-sm-4">
+				<img src="@personagem.UrlImagem" class="img-responsive" />
+			</div>
+			<div class="col-sm-8">
+				<h1>@personagem.Id: @personagem.Nome</h1>
+				<p>@personagem.Descricao</p>
+				<!-- Redireciona página
+				 Nome no link, View, ?, Parâmetros, rotas -->
+				@Html.ActionLink("QUADRINHOS ONDE O PERSONAGEM APARECE", "CharacterDetails", "Home", new { id = personagem.Id }, new { @class = "page-scroll" });
+			</div>
 		</div>
-		<div class="col-sm-8">
-			<h1>@personagem.Id: @personagem.Nome</h1>
-			<p>@personagem.Descricao</p>
-			<!-- Redireciona página
-			 Nome no link, View, ?, Parâmetros, rotas -->
-			@Html.ActionLink("QUADRINHOS ONDE O PERSONAGEM APARECE", "CharacterDetails", "Home", new { id = personagem.Id }, new { @class = "page-scroll" });
-		</div>
-	</div>
 
-	<br />
-	<br />
+		<br />
+		<br />
 	}
+
+	<cs-pager cs-paging-pagenumber="Model.PageNumber"
+			  cs-paging-totalitems="Model.TotalItems"
+			  cs-paging-pagesize="Model.PageSize"
+			  cs-pagenumber-param="pagenumber"
+			  asp-action="Index">
+	</cs-pager>
+	<p>
+		Mostrando @((Model.PageNumber - 1) * Model.PageSize) -
+		@(((Model.PageNumber * Model.PageSize) < Model.TotalItems) ? Model.PageNumber * Model.PageSize : Model.TotalItems) de @Model.TotalItems
+	</p>
+
 </div>

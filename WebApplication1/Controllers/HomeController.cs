@@ -17,6 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using cloudscribe.Pagination.Models;
+
 public class Personagem
 {
     public int Id { get; set; }
@@ -63,7 +65,7 @@ namespace WebApplication1.Controllers
             Personagem[] personagem;
             int AccessOffset = (pageNumber - 1) * PageSize;
 
-
+            int maxCount;
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -82,6 +84,7 @@ namespace WebApplication1.Controllers
                 
                 dynamic resultado =  JsonConvert.DeserializeObject(conteudo);
                 personagem = new Personagem[resultado.data.count];
+                maxCount = resultado.data.total;
 
                 for (int i = 0; i < personagem.Length; i++)
                 {
@@ -92,15 +95,19 @@ namespace WebApplication1.Controllers
                     personagem[i].UrlImagem = resultado.data.results[i].thumbnail.path + "." +
                                               resultado.data.results[i].thumbnail.extension;
                     personagem[i].UrlWiki = resultado.data.results[i].urls[1].url;
-
-
-                   
-
-
                 }
             }
 
-            return View(personagem);
+
+            var result = new PagedResult<Personagem>
+            {
+                Data = personagem.ToList(),
+                TotalItems = maxCount,
+                PageNumber = pageNumber,
+                PageSize = PageSize,
+            };
+
+            return View(result);
         }
 
 
