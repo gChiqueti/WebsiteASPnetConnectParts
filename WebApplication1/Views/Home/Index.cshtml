@@ -12,7 +12,7 @@
 			  asp-action="Index">
 	</cs-pager>
 	<p>
-		Mostrando @((Model.PageNumber - 1) * Model.PageSize) -
+		Mostrando @((Model.PageNumber - 1) * Model.PageSize + 1) -
 		@(((Model.PageNumber * Model.PageSize) < Model.TotalItems) ? Model.PageNumber * Model.PageSize : Model.TotalItems) de @Model.TotalItems
 	</p>
 
@@ -42,7 +42,7 @@
 			  asp-action="Index">
 	</cs-pager>
 	<p>
-		Mostrando @((Model.PageNumber - 1) * Model.PageSize) -
+		Mostrando @((Model.PageNumber - 1) * Model.PageSize + 1) -
 		@(((Model.PageNumber * Model.PageSize) < Model.TotalItems) ? Model.PageNumber * Model.PageSize : Model.TotalItems) de @Model.TotalItems
 	</p>
 

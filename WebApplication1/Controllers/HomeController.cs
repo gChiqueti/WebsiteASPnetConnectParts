@@ -111,20 +111,21 @@ namespace WebApplication1.Controllers
         }
 
 
-        public IActionResult CharacterDetails(int id)
+        public IActionResult CharacterDetails(int id, int pageNumber = 1, int PageSize = 20)
         {
             Comic[] comics;
-            
+            int maxCount;
             using (var client = new HttpClient())
             {
-                string comicsURL = baseURL + "/" + id.ToString() + "/comics" + $"?ts={ts}&apikey={publicKey}&hash={hash}";
+                int AccessOffset = (pageNumber - 1) * PageSize;
+                string comicsURL = baseURL + "/" + id.ToString() + "/comics" + $"?ts={ts}&apikey={publicKey}&hash={hash}&offset={AccessOffset}&limit={PageSize}";
 
                 HttpResponseMessage response = client.GetAsync(comicsURL).Result;
                 string conteudoComic = response.Content.ReadAsStringAsync().Result;
                 dynamic resultadoComic = JsonConvert.DeserializeObject(conteudoComic);
                 comics = new Comic[resultadoComic.data.count];
-
-                for(int i=0; i < comics.Length; i++)
+                maxCount = resultadoComic.data.total;
+                for (int i=0; i < comics.Length; i++)
                 {
                     comics[i] = new Comic();
                     comics[i].Id = resultadoComic.data.results[i].id;
@@ -135,7 +136,15 @@ namespace WebApplication1.Controllers
                 }
             }
 
-            return View(comics);
+            var result = new PagedResult<Comic>
+            {
+                Data = comics.ToList(),
+                TotalItems = maxCount,
+                PageNumber = pageNumber,
+                PageSize = PageSize,
+            };
+
+            return View(result);
 
         }
 

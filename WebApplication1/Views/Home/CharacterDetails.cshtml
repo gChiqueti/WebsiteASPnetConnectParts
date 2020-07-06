@@ -3,9 +3,11 @@
 	ViewData["Title"] = "CharacterDetails";
 }
 
-@model Comic[]
+@model cloudscribe.Pagination.Models.PagedResult<Comic>
 
 <div>
+
+
 	<div class="row">
 		<div class="col-sm-12">
 			<h1 style="text-align:center;"><strong>Listagem de quadrinhos contendo a personagem</strong></h1>
@@ -13,9 +15,18 @@
 		</div>
 	</div>
 
-	@foreach (var comic in Model)
-	{
+	<cs-pager cs-paging-pagenumber="Model.PageNumber"
+			  cs-paging-totalitems="Model.TotalItems"
+			  cs-paging-pagesize="Model.PageSize"
+			  cs-pagenumber-param="pagenumber"
+			  asp-action="CharacterDetails">
+	</cs-pager>
+	<p>
+		Mostrando @((Model.PageNumber - 1) * Model.PageSize + 1)-@(((Model.PageNumber * Model.PageSize) < Model.TotalItems) ? Model.PageNumber * Model.PageSize : Model.TotalItems) de @Model.TotalItems
+	</p>
 
+	@foreach (var comic in Model.Data)
+	{
 
 		<div class="row" style="border: 1px solid black; background-color: #eee; padding: 30px; border-radius: 30px;">
 
@@ -31,5 +42,15 @@
 		<br />
 		<br />
 	}
+
+	<cs-pager cs-paging-pagenumber="Model.PageNumber"
+			  cs-paging-totalitems="Model.TotalItems"
+			  cs-paging-pagesize="Model.PageSize"
+			  cs-pagenumber-param="pagenumber"
+			  asp-action="CharacterDetails">
+	</cs-pager>
+	<p>
+		Mostrando @((Model.PageNumber - 1) * Model.PageSize + 1)-@(((Model.PageNumber * Model.PageSize) < Model.TotalItems) ? Model.PageNumber * Model.PageSize : Model.TotalItems) de @Model.TotalItems
+	</p>
 
 </div>
