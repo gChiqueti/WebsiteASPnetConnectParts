@@ -1,0 +1,35 @@
+﻿
+@{
+	ViewData["Title"] = "CharacterDetails";
+}
+
+@model Comic[]
+
+<div>
+	<div class="row">
+		<div class="col-sm-12">
+			<h1 style="text-align:center;"><strong>Listagem de quadrinhos contendo a personagem</strong></h1>
+
+		</div>
+	</div>
+
+	@foreach (var comic in Model)
+	{
+
+
+		<div class="row" style="border: 1px solid black; background-color: #eee; padding: 30px; border-radius: 30px;">
+
+			<div class="col-sm-4">
+				<img src="@comic.UrlImagem" class="img-responsive" style="border-radius: 10px;" />
+			</div>
+			<div class="col-sm-8">
+				<h1>@comic.Id: @comic.Titulo</h1>
+				<p>@comic.Descricao</p>
+			</div>
+		</div>
+
+		<br />
+		<br />
+	}
+
+</div>
