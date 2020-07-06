@@ -19,6 +19,7 @@ using Newtonsoft.Json.Linq;
 
 using cloudscribe.Pagination.Models;
 
+// CLASSES UTILIZADAS
 public class Personagem
 {
     public int Id { get; set; }
@@ -36,12 +37,12 @@ public class Comic
     public string UrlImagem { get; set; }
 }
 
+//NAMESPAVE PRINCIPAL
 namespace WebApplication1.Controllers
 {
     public class HomeController : Controller
     {
         public string publicKey = "001ac6c73378bbfff488a36141458af2";
-        //public string privateKey = "34822d85476cb25458a16c0b061e9e4662a826e8";
         public string baseURL = "https://gateway.marvel.com/v1/public/characters";
         public string hash = "72e5ed53d1398abb831c3ceec263f18b";
         public string ts = "thesoer";
@@ -62,30 +63,37 @@ namespace WebApplication1.Controllers
 
         public IActionResult Index(int pageNumber=1, int PageSize=20)
         {
-            Personagem[] personagem;
-            int AccessOffset = (pageNumber - 1) * PageSize;
+            Personagem[] personagem; // lista de personagens a serem visualizados
+            int maxCount; // contém o total de personagens que a API possui
 
-            int maxCount;
+
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                //string ts = DateTime.Now.Ticks.ToString();
-
                 //string hash = GerarHash(ts, publicKey, privateKey);
 
+                // Cria o endereço completo do endpoint
+                int AccessOffset = (pageNumber - 1) * PageSize;
                 string fullURL = baseURL + $"?ts={ts}&apikey={publicKey}&hash={hash}&offset={AccessOffset}&limit={PageSize}";  
-                                 
+                     
+                // Faz a requisição
                 HttpResponseMessage response = client.GetAsync(fullURL).Result;
 
-                response.EnsureSuccessStatusCode();
-                string conteudo = response.Content.ReadAsStringAsync().Result;
-                
-                dynamic resultado =  JsonConvert.DeserializeObject(conteudo);
-                personagem = new Personagem[resultado.data.count];
-                maxCount = resultado.data.total;
+                // Checa se o retorno foi bem sucedido
+                response.EnsureSuccessStatusCode(); 
 
+                // Pega a resposta como uma string
+                string conteudo = response.Content.ReadAsStringAsync().Result;
+                // Converte string para formato JSON
+                dynamic resultado =  JsonConvert.DeserializeObject(conteudo);  
+
+                // Captura o total de personagens para utilizar posteriormente para paginação
+                maxCount = resultado.data.total;    
+
+                // Salva os dados dos personagens
+                personagem = new Personagem[resultado.data.count];
                 for (int i = 0; i < personagem.Length; i++)
                 {
                     personagem[i] = new Personagem();
@@ -98,7 +106,7 @@ namespace WebApplication1.Controllers
                 }
             }
 
-
+            // Encapsula os resultados para enviar para a view
             var result = new PagedResult<Personagem>
             {
                 Data = personagem.ToList(),
@@ -110,21 +118,27 @@ namespace WebApplication1.Controllers
             return View(result);
         }
 
-
         public IActionResult CharacterDetails(int id, int pageNumber = 1, int PageSize = 20)
         {
-            Comic[] comics;
-            int maxCount;
+            Comic[] comics; // lista de comics a serem visualizados
+            int maxCount; // contém o total de personagens que a API possui
+
             using (var client = new HttpClient())
             {
+                // Cria o endereço completo do endpoint
                 int AccessOffset = (pageNumber - 1) * PageSize;
                 string comicsURL = baseURL + "/" + id.ToString() + "/comics" + $"?ts={ts}&apikey={publicKey}&hash={hash}&offset={AccessOffset}&limit={PageSize}";
 
+                // Faz a requisição e retorna a responta em JSON
                 HttpResponseMessage response = client.GetAsync(comicsURL).Result;
                 string conteudoComic = response.Content.ReadAsStringAsync().Result;
                 dynamic resultadoComic = JsonConvert.DeserializeObject(conteudoComic);
-                comics = new Comic[resultadoComic.data.count];
+
+                // Captura o total de personagens para utilizar posteriormente para paginação
                 maxCount = resultadoComic.data.total;
+
+                // Salva os dados das comics
+                comics = new Comic[resultadoComic.data.count];
                 for (int i=0; i < comics.Length; i++)
                 {
                     comics[i] = new Comic();
@@ -136,6 +150,7 @@ namespace WebApplication1.Controllers
                 }
             }
 
+            // Encapsula os resultados para enviar para a view
             var result = new PagedResult<Comic>
             {
                 Data = comics.ToList(),
