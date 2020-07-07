@@ -63,6 +63,8 @@ namespace WebApplication1.Controllers
 
         public IActionResult Index(int pageNumber=1, int PageSize=20)
         {
+
+           
             Personagem[] personagem; // lista de personagens a serem visualizados
             int maxCount; // contém o total de personagens que a API possui
 
@@ -76,14 +78,20 @@ namespace WebApplication1.Controllers
 
                 // Cria o endereço completo do endpoint
                 int AccessOffset = (pageNumber - 1) * PageSize;
-                string fullURL = baseURL + $"?ts={ts}&apikey={publicKey}&hash={hash}&offset={AccessOffset}&limit={PageSize}";  
-                     
-                // Faz a requisição
-                HttpResponseMessage response = client.GetAsync(fullURL).Result;
+                string fullURL = baseURL + $"?ts={ts}&apikey={publicKey}&hash={hash}&offset={AccessOffset}&limit={PageSize}";
 
-                // Checa se o retorno foi bem sucedido
-                response.EnsureSuccessStatusCode(); 
 
+                HttpResponseMessage response;
+                try
+                {     
+                    response = client.GetAsync(fullURL).Result; // Faz a requisição
+                    response.EnsureSuccessStatusCode(); // Checa se o retorno foi bem sucedido
+                }
+                catch (Exception)
+                {
+                    return RedirectToAction("Error");
+                }
+                
                 // Pega a resposta como uma string
                 string conteudo = response.Content.ReadAsStringAsync().Result;
                 // Converte string para formato JSON
@@ -130,7 +138,17 @@ namespace WebApplication1.Controllers
                 string comicsURL = baseURL + "/" + id.ToString() + "/comics" + $"?ts={ts}&apikey={publicKey}&hash={hash}&offset={AccessOffset}&limit={PageSize}";
 
                 // Faz a requisição e retorna a responta em JSON
-                HttpResponseMessage response = client.GetAsync(comicsURL).Result;
+                HttpResponseMessage response;
+                try
+                {
+                    response = client.GetAsync(comicsURL).Result;
+                    response.EnsureSuccessStatusCode();
+                }
+                catch (Exception)
+                {
+                    return RedirectToAction("Error");
+                }
+
                 string conteudoComic = response.Content.ReadAsStringAsync().Result;
                 dynamic resultadoComic = JsonConvert.DeserializeObject(conteudoComic);
 
